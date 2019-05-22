@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <meta content="{{ csrf_token() }}" name="csrf-token">
+
         <title>Laravel</title>
 
         {{-- Styles --}}
@@ -29,6 +30,10 @@
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
                             <a href="{{ route('home') }}" class="nav-link">Home</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('register') }}" class="nav-link">Register</a>
                         </li>
 
                         <li class="nav-item">

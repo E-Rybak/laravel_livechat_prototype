@@ -10,7 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+use Illuminate\Support\Facades\Broadcast;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
@@ -24,9 +24,24 @@ Route::get('/presence-channel', function () {
 })->name('presence-channel');
 
 Route::get('/private-channel', function () {
-	return 'Not yet implemented';
+	return view('private-channel');
 })->name('private-channel');
 
 Route::post('/SendNewMessage', function () {
-	broadcast(new App\Events\NewPublicMessage( request('message'), request('user') ))->toOthers();
+	broadcast(new App\Events\NewPublicMessage( request('message'), request('user') ));
 });
+
+Route::post('message/private', function () {
+	broadcast(new App\Events\NewPrivateMessage("asdqwe"));
+	// return auth()->user();
+});
+
+Route::get('/test', function () {
+	return view('test');
+});
+
+Auth::routes();
+
+Broadcast::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

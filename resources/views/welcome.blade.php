@@ -3,5 +3,5 @@
 @section('title', 'Welcome')
 
 @section('content')
-<h5 class="d-flex justify-content-center">Please navigate to on of the channels to test livechat</h5>
+<h5 class="d-flex justify-content-center">Please navigate to one of the channels to test livechat</h5>
 @endsection
