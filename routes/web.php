@@ -36,12 +36,6 @@ Route::post('message/private', function () {
 	// return auth()->user();
 });
 
-Route::get('/test', function () {
-	return view('test');
-});
-
 Auth::routes();
-
-Broadcast::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
