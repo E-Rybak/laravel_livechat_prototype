@@ -20,7 +20,6 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
 Vue.component('private-chat-component', require('./components/PrivateChatComponent.vue').default);
-Vue.component('test', require('./components/Test.vue').default);
 Vue.component('chat-component', require('./components/ChatComponent.vue').default);
 
 /**

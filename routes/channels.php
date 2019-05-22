@@ -14,7 +14,3 @@
 Broadcast::channel('App.User.{id}', function ($user, $id) {
     return true;
 });
-
-Broadcast::channel('channel-name', function ($user) {
-	return true;
-});

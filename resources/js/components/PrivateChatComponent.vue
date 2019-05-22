@@ -23,14 +23,14 @@ import Axios from 'axios'
 			}
 		},
 		methods: {
-			listen () 
+			listen ()
 			{
 				Echo.private('App.User.1')
 				.listen('NewPrivateMessage', (message) => {
 					console.log(message)
 				})
 			},
-			TriggerEvent () 
+			TriggerEvent ()
 			{
 				Axios.post('http://127.0.0.1:8000/message/private', this.form)
 				.then(response => {
