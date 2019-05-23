@@ -1,6 +1,26 @@
 <template>
 	<div>
-		{{ title }}
+		<h3 class="d-flex justify-content-center">Private chat -&nbsp; <b>requires authentication</b></h3>
+		<div style="overflow-y: auto; height: 300px;">
+			<div class="message" v-for="message in messages">
+				<hr style="width: 200px">
+				<h6 class="d-flex justify-content-center">From:&nbsp;<i>{{ message.username }}</i></h6>
+				<div class="d-flex justify-content-center">Message: {{ message.message}}</div>
+			</div>
+		</div>
+		<form class="form-inline" @submit.prevent="sendMessage">
+			<div class="form-group">
+				<label for="message">Message:</label>
+				&nbsp;
+				<input required id="message" class="form-control" placeholder="message.." type="text" name="message" v-model="form.message">
+				&nbsp;
+				<label for="user">Username:</label>
+				&nbsp;
+				<input required id="user" class="form-control" placeholder="username.." type="text" name="username" v-model="form.user">
+				&nbsp;
+			</div>
+			<button type="submit" class="btn btn-primary mb2">Send message</button>
+		</form>
 	</div>
 </template>
 
@@ -11,15 +31,14 @@ import Axios from 'axios'
 		mounted() {
 			this.listen();
 			console.log('Listening');
-			this.TriggerEvent();
-			console.log('Sent message');
 		},
 		data() {
 			return {
-				title: 'Hello World',
+				messages: [],
 				form: {
-					message: 'This is the message',
-				}
+					user: '',
+					message: ''
+				},
 			}
 		},
 		methods: {
@@ -27,15 +46,12 @@ import Axios from 'axios'
 			{
 				Echo.private('App.User.1')
 				.listen('NewPrivateMessage', (message) => {
-					console.log(message)
+					this.messages.push(message)
 				})
 			},
-			TriggerEvent ()
+			sendMessage ()
 			{
-				Axios.post('http://127.0.0.1:8000/message/private', this.form)
-				.then(response => {
-					 console.log(response.data)
-				}).catch(error => { console.log(error) })
+				Axios.post('http://127.0.0.1:8000/message/private', this.form);
 			}
 		}
 	};

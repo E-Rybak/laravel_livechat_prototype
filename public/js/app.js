@@ -1816,7 +1816,7 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     sendMessage: function sendMessage() {
-      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('http://127.0.0.1:8000/SendNewMessage', this.form).then(function (response) {// console.log(response.data)	
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('http://127.0.0.1:8000/SendNewMessage', this.form).then(function (response) {// console.log(response.data)
       });
     }
   }
@@ -1841,34 +1841,51 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     this.listen();
     console.log('Listening');
-    this.TriggerEvent();
-    console.log('Sent message');
   },
   data: function data() {
     return {
-      title: 'Hello World',
+      messages: [],
       form: {
-        message: 'This is the message'
+        user: '',
+        message: ''
       }
     };
   },
   methods: {
     listen: function listen() {
+      var _this = this;
+
       Echo["private"]('App.User.1').listen('NewPrivateMessage', function (message) {
-        console.log(message);
+        _this.messages.push(message);
       });
     },
-    TriggerEvent: function TriggerEvent() {
-      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('http://127.0.0.1:8000/message/private', this.form).then(function (response) {
-        console.log(response.data);
-      })["catch"](function (error) {
-        console.log(error);
-      });
+    sendMessage: function sendMessage() {
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('http://127.0.0.1:8000/message/private', this.form);
     }
   }
 });
@@ -47454,9 +47471,124 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [_vm._v("\n\t" + _vm._s(_vm.title) + "\n")])
+  return _c("div", [
+    _vm._m(0),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticStyle: { "overflow-y": "auto", height: "300px" } },
+      _vm._l(_vm.messages, function(message) {
+        return _c("div", { staticClass: "message" }, [
+          _c("hr", { staticStyle: { width: "200px" } }),
+          _vm._v(" "),
+          _c("h6", { staticClass: "d-flex justify-content-center" }, [
+            _vm._v("From: "),
+            _c("i", [_vm._v(_vm._s(message.username))])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "d-flex justify-content-center" }, [
+            _vm._v("Message: " + _vm._s(message.message))
+          ])
+        ])
+      }),
+      0
+    ),
+    _vm._v(" "),
+    _c(
+      "form",
+      {
+        staticClass: "form-inline",
+        on: {
+          submit: function($event) {
+            $event.preventDefault()
+            return _vm.sendMessage($event)
+          }
+        }
+      },
+      [
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", { attrs: { for: "message" } }, [_vm._v("Message:")]),
+          _vm._v("\n\t\t\t \n\t\t\t"),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.form.message,
+                expression: "form.message"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: {
+              required: "",
+              id: "message",
+              placeholder: "message..",
+              type: "text",
+              name: "message"
+            },
+            domProps: { value: _vm.form.message },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.$set(_vm.form, "message", $event.target.value)
+              }
+            }
+          }),
+          _vm._v("\n\t\t\t \n\t\t\t"),
+          _c("label", { attrs: { for: "user" } }, [_vm._v("Username:")]),
+          _vm._v("\n\t\t\t \n\t\t\t"),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.form.user,
+                expression: "form.user"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: {
+              required: "",
+              id: "user",
+              placeholder: "username..",
+              type: "text",
+              name: "username"
+            },
+            domProps: { value: _vm.form.user },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.$set(_vm.form, "user", $event.target.value)
+              }
+            }
+          }),
+          _vm._v("\n\t\t\t \n\t\t")
+        ]),
+        _vm._v(" "),
+        _c(
+          "button",
+          { staticClass: "btn btn-primary mb2", attrs: { type: "submit" } },
+          [_vm._v("Send message")]
+        )
+      ]
+    )
+  ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("h3", { staticClass: "d-flex justify-content-center" }, [
+      _vm._v("Private chat -  "),
+      _c("b", [_vm._v("requires authentication")])
+    ])
+  }
+]
 render._withStripped = true
 
 

@@ -32,8 +32,7 @@ Route::post('/SendNewMessage', function () {
 });
 
 Route::post('message/private', function () {
-	broadcast(new App\Events\NewPrivateMessage("asdqwe"));
-	// return auth()->user();
+	broadcast(new App\Events\NewPrivateMessage( request('message'), request('user') ));
 });
 
 Auth::routes();

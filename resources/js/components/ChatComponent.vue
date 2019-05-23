@@ -51,7 +51,7 @@ import Axios from 'axios'
 			sendMessage ()
 			{
 				Axios.post('http://127.0.0.1:8000/SendNewMessage', this.form).then(response => {
-					// console.log(response.data)	
+					// console.log(response.data)
 				})
 			}
 		}
