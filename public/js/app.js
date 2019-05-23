@@ -1858,22 +1858,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     this.listen();
     console.log('Listening');
+    this.imessages = JSON.parse(this._imessages);
+    this.user = JSON.parse(this._user);
   },
   data: function data() {
     return {
-      messages: [],
+      imessages: [],
       form: {
-        user: '',
-        message: ''
-      }
+        body: ''
+      },
+      user: {}
     };
   },
   methods: {
@@ -1881,13 +1880,16 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       Echo["private"]('App.User.1').listen('NewPrivateMessage', function (message) {
-        _this.messages.push(message);
+        _this.imessages.push(message);
       });
     },
     sendMessage: function sendMessage() {
-      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('http://127.0.0.1:8000/message/private', this.form);
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('http://127.0.0.1:8000/message/private', this.form)["catch"](function (error) {
+        console.log(error);
+      });
     }
-  }
+  },
+  props: ['_imessages', '_user']
 });
 
 /***/ }),
@@ -47477,17 +47479,17 @@ var render = function() {
     _c(
       "div",
       { staticStyle: { "overflow-y": "auto", height: "300px" } },
-      _vm._l(_vm.messages, function(message) {
+      _vm._l(_vm.imessages, function(message) {
         return _c("div", { staticClass: "message" }, [
           _c("hr", { staticStyle: { width: "200px" } }),
           _vm._v(" "),
           _c("h6", { staticClass: "d-flex justify-content-center" }, [
             _vm._v("From: "),
-            _c("i", [_vm._v(_vm._s(message.username))])
+            _c("i", [_vm._v(_vm._s(_vm.user.name))])
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "d-flex justify-content-center" }, [
-            _vm._v("Message: " + _vm._s(message.message))
+            _vm._v("Message: " + _vm._s(message.body))
           ])
         ])
       }),
@@ -47536,37 +47538,7 @@ var render = function() {
               }
             }
           }),
-          _vm._v("\n\t\t\t \n\t\t\t"),
-          _c("label", { attrs: { for: "user" } }, [_vm._v("Username:")]),
-          _vm._v("\n\t\t\t \n\t\t\t"),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.form.user,
-                expression: "form.user"
-              }
-            ],
-            staticClass: "form-control",
-            attrs: {
-              required: "",
-              id: "user",
-              placeholder: "username..",
-              type: "text",
-              name: "username"
-            },
-            domProps: { value: _vm.form.user },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.$set(_vm.form, "user", $event.target.value)
-              }
-            }
-          }),
-          _vm._v("\n\t\t\t \n\t\t")
+          _vm._v("\n\t\t\t \n\n\t\t")
         ]),
         _vm._v(" "),
         _c(

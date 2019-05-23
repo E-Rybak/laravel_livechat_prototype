@@ -15,19 +15,17 @@ class NewPrivateMessage implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $message;
-    public $username;
+    public $body;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($message, $username)
+    public function __construct($body)
     {
         //
-        $this->message = $message;
-        $this->username = $username;
+        $this->body = $body;
     }
 
     /**

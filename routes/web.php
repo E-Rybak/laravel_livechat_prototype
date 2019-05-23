@@ -24,16 +24,27 @@ Route::get('/presence-channel', function () {
 })->name('presence-channel');
 
 Route::get('/private-channel', function () {
-	return view('private-channel');
-})->name('private-channel');
+	$imessages = auth()->user()->instant_messages;
+	$user = auth()->user();
+	return view('private-channel', compact('imessages', 'user'));
+
+})->name('private-channel')->middleware('auth');
 
 Route::post('/SendNewMessage', function () {
 	broadcast(new App\Events\NewPublicMessage( request('message'), request('user') ));
 });
 
 Route::post('message/private', function () {
+
+	$user = auth()->user();
+
+	$imessage = new App\InstantMessage();
+	$imessage->body = request('message');
+
+	$user->instant_messages()->save($imessage);
 	broadcast(new App\Events\NewPrivateMessage( request('message'), request('user') ));
-});
+
+})->middleware('auth');
 
 Auth::routes();
 
