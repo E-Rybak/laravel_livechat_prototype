@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateInstantMessagesTable extends Migration
+class ChatUser extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateInstantMessagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('instant_messages', function (Blueprint $table) {
+        Schema::create('chat_user', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('body');
-            $table->integer('user_id')->nullable();
-            $table->integer('chat_id')->nullable();
+            $table->string('chat_id');
+            $table->string('user_id');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ class CreateInstantMessagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('instant_messages');
+        //
     }
 }

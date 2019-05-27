@@ -5,6 +5,8 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\InstantMessage;
+use App\Chat;
 
 class User extends Authenticatable
 {
@@ -39,5 +41,14 @@ class User extends Authenticatable
 
     public function instant_messages () {
         return $this->hasMany('App\InstantMessage');
+    }
+
+    public function chats () {
+        return $this->belongsToMany('App\Chat');
+    }
+
+    public function addInstantMessage (InstantMessage $message, Chat $chat) {
+        $chat->instant_messages()->save($message);
+        $this->instant_messages()->save($message);
     }
 }

@@ -16,16 +16,20 @@ class NewPrivateMessage implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $body;
+    public $roomId;
+    public $user;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($body)
+    public function __construct($body, $roomId, $user)
     {
         //
         $this->body = $body;
+        $this->roomId = $roomId;
+        $this->user = $user;
     }
 
     /**
@@ -35,6 +39,16 @@ class NewPrivateMessage implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('App.User.1');
+        return new PrivateChannel('App.User.' . $this->roomId);
+    }
+
+    public function broadcastWith() 
+    {
+        return 
+        [
+            'body' => $this->body,
+            'chat_id' => $this->roomId,
+            'user' => $this->user,
+        ];
     }
 }

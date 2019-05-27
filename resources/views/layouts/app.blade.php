@@ -45,7 +45,7 @@
                         </li>
 
                         <li class="nav-item">
-                            <a href="{{ route('private-channel') }}" class="nav-link">Private channel</a>
+                            <a href="{{ route('chatrooms') }}" class="nav-link">Private chatrooms</a>
                         </li>
                     </ul>
                 </div>
