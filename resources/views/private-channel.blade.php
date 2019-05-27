@@ -4,7 +4,6 @@
 
 @section('content')
 
-<private-chat-component _roomid="{{ $id }}" _imessages="{{ json_encode($imessages) }}" _user="{{ json_encode($user) }}"></private-chat-component>		
-
+<private-chat-component participants="{{ json_encode($participants) }}" _roomid="{{ $id }}" _imessages="{{ json_encode($imessages) }}" _user="{{ json_encode($user) }}"></private-chat-component>		
 </script>
 @endsection

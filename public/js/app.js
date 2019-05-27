@@ -1931,7 +1931,7 @@ __webpack_require__.r(__webpack_exports__);
       });
     }
   },
-  props: ['_imessages', '_user', '_roomid']
+  props: ['_imessages', '_user', '_roomid', 'participants']
 });
 
 /***/ }),

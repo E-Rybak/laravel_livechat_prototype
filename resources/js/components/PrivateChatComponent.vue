@@ -64,6 +64,6 @@ import Axios from 'axios'
 				});
 			}
 		},
-		props: ['_imessages', '_user', '_roomid']
+		props: ['_imessages', '_user', '_roomid', 'participants']
 	};
 </script>

@@ -14,7 +14,11 @@ class Chat extends Model
     }
 
     public function users () {
-    	return $this->belongsToMany('App\User')->withDefault();
+    	return $this->belongsToMany('App\User');
+    }
+
+    public function addParticipant (User $user) {
+        $this->users()-save($user);
     }
 
 	public function addInstantMessage (InstantMessage $message, User $user) {

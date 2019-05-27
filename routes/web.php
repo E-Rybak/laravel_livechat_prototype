@@ -31,11 +31,17 @@ Route::get('/chatrooms', function () {
 
 Route::get('/chatrooms/{id}', function ($id) {
 	// Fetch the messages, along with their senders, from the chatroom
-	$imessages = App\Chat::with('instant_messages.user')->findOrFail($id)->instant_messages; 
-
+	$chat = App\Chat::with(['instant_messages.user', 'users'])->findOrFail($id); 
+	$imessages = $chat->instant_messages;
 	$user = auth()->user();
 
-	return view('private-channel', compact('imessages', 'user', 'id'));
+	if (!$chat->users->contains('id', $user->id)) { // Check if auth'ed user is in the participants array, if not add them.
+		$chat->users()->save($user);
+	}
+
+	$participants = $chat->users;
+	
+	return view('private-channel', compact('imessages', 'user', 'id', 'participants'));
 
 })->middleware('auth')->name('private-channel');
 
