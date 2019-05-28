@@ -14,3 +14,10 @@
 Broadcast::channel('App.User.{id}', function ($user, $id) {
     return true;
 });
+
+Broadcast::channel('Presence', function ($user) {
+	return [
+		'id' => $user->id,
+		'name' => $user->name,
+	];
+});

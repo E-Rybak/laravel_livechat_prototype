@@ -61,7 +61,6 @@ import Axios from 'axios'
 					// console.log(response.data)
 				})
 				}
-				
 			}
 		},
 		props: ['_auth_user', '_messages'],

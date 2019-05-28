@@ -22,7 +22,8 @@ Route::get('/public-channel', function () {
 })->name('public-channel');
 
 Route::get('/presence-channel', function () {
-	return 'Not yet implemented';
+	$messages = App\PresenceMessage::with('user')->get();
+	return view('presence-channel', compact('messages'));
 })->name('presence-channel');
 
 Route::get('/chatrooms', function () {
@@ -70,6 +71,16 @@ Route::post('message/private', function () {
 	$user->addInstantMessage($imessage, $chat);
 	broadcast(new App\Events\NewPrivateMessage( request('message'), request('roomId'), $user));
 })->middleware('auth');
+
+Route::post('message/presence', function () {
+	$user = auth()->user();
+
+	$message = new App\PresenceMessage();
+	$message->body = request('message');
+
+	$user->presence_messages()->save($message);
+	broadcast(new App\Events\NewPresenceMessage($message->load('user')));
+});
 
 Auth::routes();
 

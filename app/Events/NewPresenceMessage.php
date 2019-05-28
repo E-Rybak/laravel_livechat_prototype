@@ -10,9 +10,9 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
-use App\PublicInstantMessage;
+use App\PresenceMessage;
 
-class NewPublicMessage implements ShouldBroadcastNow
+class NewPresenceMessage implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -23,9 +23,9 @@ class NewPublicMessage implements ShouldBroadcastNow
      *
      * @return void
      */
-    public function __construct(PublicInstantMessage $message)
+    public function __construct(PresenceMessage $message)
     {
-        $this->message = $message->load('user');
+        $this->message = $message;
     }
 
     /**
@@ -35,6 +35,6 @@ class NewPublicMessage implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new Channel('public-channel');
+        return new PresenceChannel('Presence');
     }
 }

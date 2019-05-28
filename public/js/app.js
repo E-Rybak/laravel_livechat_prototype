@@ -1868,6 +1868,94 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PresenceChannelComponent.vue?vue&type=script&lang=js&":
+/*!***********************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/PresenceChannelComponent.vue?vue&type=script&lang=js& ***!
+  \***********************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      messages: [],
+      form: {
+        message: ''
+      },
+      auth_user: {}
+    };
+  },
+  methods: {
+    sendMessage: function sendMessage() {
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('http://127.0.0.1:8000/message/presence', this.form).then(function (response) {// console.log(response.data)
+      })["catch"](function (error) {
+        console.log(error.message);
+      });
+    },
+    listen: function listen() {
+      var _this = this;
+
+      Echo.join('Presence').here(function (users) {// users currently in the room
+        // console.log(users)
+      }).joining(function (user) {
+        console.log('User ' + user.name + ' joining the room');
+      }).leaving(function (user) {
+        console.log('user ' + user.name + ' left the room');
+      }).listen('NewPresenceMessage', function (response) {
+        console.log(response.message);
+
+        _this.messages.push(response.message);
+      });
+    },
+    userTyping: function userTyping() {
+      console.log('123');
+      Echo["private"]('Presence').whisper('typing', {
+        name: this.auth_user.name
+      });
+    }
+  },
+  mounted: function mounted() {
+    this.messages = JSON.parse(this._messages);
+    this.auth_user = JSON.parse(this._auth_user);
+    this.listen();
+  },
+  created: function created() {
+    Echo["private"]('Presence').listenForWhisper('typing', function (name) {
+      console.log("asq");
+    });
+  },
+  props: ['_messages', '_auth_user']
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PrivateChatComponent.vue?vue&type=script&lang=js&":
 /*!*******************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/PrivateChatComponent.vue?vue&type=script&lang=js& ***!
@@ -1909,6 +1997,9 @@ __webpack_require__.r(__webpack_exports__);
     console.log('Listening');
     this.imessages = JSON.parse(this._imessages);
     this.user = JSON.parse(this._user);
+    Echo["private"]('App.User.' + this._roomid).listenForWhisper('typing', function (name) {
+      console.log(name.name);
+    });
   },
   data: function data() {
     return {
@@ -1937,6 +2028,12 @@ __webpack_require__.r(__webpack_exports__);
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('http://127.0.0.1:8000/message/private', this.form).then(function (response) {// console.log(response.data)
       })["catch"](function (error) {
         console.log(error);
+      });
+    },
+    userTyping: function userTyping() {
+      console.log('123');
+      Echo["private"]('App.User' + this.roomId).whisper('typing', {
+        name: this.user.name
       });
     }
   },
@@ -47523,6 +47620,108 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PresenceChannelComponent.vue?vue&type=template&id=11b9c980&":
+/*!***************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/PresenceChannelComponent.vue?vue&type=template&id=11b9c980& ***!
+  \***************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _c("h3", { staticClass: "d-flex justify-content-center" }, [
+      _vm._v("Presence chat - requires authentication")
+    ]),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticStyle: { "overflow-y": "auto", height: "300px" } },
+      _vm._l(_vm.messages, function(message) {
+        return _c("div", { staticClass: "message" }, [
+          _c("hr", { staticStyle: { width: "200px" } }),
+          _vm._v(" "),
+          _c("h6", { staticClass: "d-flex justify-content-center" }, [
+            _vm._v("From: "),
+            _c("i", [_vm._v(_vm._s(message.user.name))])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "d-flex justify-content-center" }, [
+            _vm._v("Message: " + _vm._s(message.body))
+          ])
+        ])
+      }),
+      0
+    ),
+    _vm._v(" "),
+    _c(
+      "form",
+      {
+        staticClass: "form-inline",
+        on: {
+          submit: function($event) {
+            $event.preventDefault()
+            return _vm.sendMessage($event)
+          }
+        }
+      },
+      [
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", { attrs: { for: "message" } }, [_vm._v("Message:")]),
+          _vm._v("\n\t\t\t \n\t\t\t"),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.form.message,
+                expression: "form.message"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: {
+              required: "",
+              id: "message",
+              placeholder: "message..",
+              type: "text",
+              name: "message"
+            },
+            domProps: { value: _vm.form.message },
+            on: {
+              keydown: _vm.userTyping,
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.$set(_vm.form, "message", $event.target.value)
+              }
+            }
+          }),
+          _vm._v("\n\t\t\t \n\t\t")
+        ]),
+        _vm._v(" "),
+        _c(
+          "button",
+          { staticClass: "btn btn-primary mb2", attrs: { type: "submit" } },
+          [_vm._v("Send message")]
+        )
+      ]
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PrivateChatComponent.vue?vue&type=template&id=08e3f8a6&":
 /*!***********************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/PrivateChatComponent.vue?vue&type=template&id=08e3f8a6& ***!
@@ -47595,6 +47794,7 @@ var render = function() {
             },
             domProps: { value: _vm.form.message },
             on: {
+              keydown: _vm.userTyping,
               input: function($event) {
                 if ($event.target.composing) {
                   return
@@ -59794,6 +59994,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
 Vue.component('private-chat-component', __webpack_require__(/*! ./components/PrivateChatComponent.vue */ "./resources/js/components/PrivateChatComponent.vue")["default"]);
+Vue.component('presence-channel-component', __webpack_require__(/*! ./components/PresenceChannelComponent.vue */ "./resources/js/components/PresenceChannelComponent.vue")["default"]);
 Vue.component('chat-room-index', __webpack_require__(/*! ./components/ChatRoomIndex.vue */ "./resources/js/components/ChatRoomIndex.vue")["default"]);
 Vue.component('chat-component', __webpack_require__(/*! ./components/ChatComponent.vue */ "./resources/js/components/ChatComponent.vue")["default"]);
 /**
@@ -60006,6 +60207,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ChatRoomIndex_vue_vue_type_template_id_80048738___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ChatRoomIndex_vue_vue_type_template_id_80048738___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/PresenceChannelComponent.vue":
+/*!**************************************************************!*\
+  !*** ./resources/js/components/PresenceChannelComponent.vue ***!
+  \**************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _PresenceChannelComponent_vue_vue_type_template_id_11b9c980___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./PresenceChannelComponent.vue?vue&type=template&id=11b9c980& */ "./resources/js/components/PresenceChannelComponent.vue?vue&type=template&id=11b9c980&");
+/* harmony import */ var _PresenceChannelComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PresenceChannelComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/PresenceChannelComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _PresenceChannelComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _PresenceChannelComponent_vue_vue_type_template_id_11b9c980___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _PresenceChannelComponent_vue_vue_type_template_id_11b9c980___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/PresenceChannelComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/PresenceChannelComponent.vue?vue&type=script&lang=js&":
+/*!***************************************************************************************!*\
+  !*** ./resources/js/components/PresenceChannelComponent.vue?vue&type=script&lang=js& ***!
+  \***************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_PresenceChannelComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./PresenceChannelComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PresenceChannelComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_PresenceChannelComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/PresenceChannelComponent.vue?vue&type=template&id=11b9c980&":
+/*!*********************************************************************************************!*\
+  !*** ./resources/js/components/PresenceChannelComponent.vue?vue&type=template&id=11b9c980& ***!
+  \*********************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PresenceChannelComponent_vue_vue_type_template_id_11b9c980___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./PresenceChannelComponent.vue?vue&type=template&id=11b9c980& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PresenceChannelComponent.vue?vue&type=template&id=11b9c980&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PresenceChannelComponent_vue_vue_type_template_id_11b9c980___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PresenceChannelComponent_vue_vue_type_template_id_11b9c980___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

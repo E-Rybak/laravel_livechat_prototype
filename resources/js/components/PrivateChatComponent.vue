@@ -12,7 +12,7 @@
 			<div class="form-group">
 				<label for="message">Message:</label>
 				&nbsp;
-				<input required id="message" class="form-control" placeholder="message.." type="text" name="message" v-model="form.message">
+				<input required id="message" class="form-control" placeholder="message.." type="text" name="message" v-model="form.message" v-on:keydown="userTyping">
 				&nbsp;
 			</div>
 			
@@ -30,6 +30,9 @@ import Axios from 'axios'
 			console.log('Listening');
 			this.imessages = JSON.parse(this._imessages)
 			this.user = JSON.parse(this._user)
+			Echo.private('App.User.' + this._roomid).listenForWhisper('typing', (name) => {
+				console.log(name.name)
+			})
 		},
 		data() {
 			return {
@@ -61,6 +64,12 @@ import Axios from 'axios'
 				})
 				.catch(error => {
 					console.log(error)
+				});
+			},
+			userTyping () {
+				console.log('123')
+				Echo.private('App.User' + this.roomId).whisper('typing', {
+					name: this.user.name
 				});
 			}
 		},
