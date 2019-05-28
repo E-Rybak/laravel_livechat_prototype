@@ -22,7 +22,6 @@
 			<button type="submit" class="btn btn-primary mb2">Send message</button>
 		</form>
 	</div>
-
 </template>
 <script>
 import Axios from 'axios'
