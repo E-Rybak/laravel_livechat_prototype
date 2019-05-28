@@ -4,7 +4,7 @@
 
 @section('content')
 
-<chat-component></chat-component>		
+<chat-component _messages="{{ json_encode($messages) }}" _auth_user="{{ json_encode(auth()->user()) }}"></chat-component>		
 
 </script>
 @endsection

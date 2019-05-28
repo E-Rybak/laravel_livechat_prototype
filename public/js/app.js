@@ -1786,39 +1786,49 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     this.listen();
+    this.auth_user = JSON.parse(this._auth_user);
+    this.messages = JSON.parse(this._messages);
+
+    if (this.auth_user) {
+      this.form.user_id = this.auth_user.id;
+    }
   },
   data: function data() {
     return {
       messages: [],
       form: {
-        user: '',
-        message: ''
-      }
+        message: '',
+        user_id: null
+      },
+      auth_user: {}
     };
   },
   methods: {
     listen: function listen() {
       var _this = this;
 
-      Echo.channel('public-channel').listen('NewPublicMessage', function (message) {
-        console.log(message);
+      Echo.channel('public-channel').listen('NewPublicMessage', function (response) {
+        console.log(response);
 
-        _this.messages.push(message);
+        _this.messages.push(response.message);
       });
     },
     sendMessage: function sendMessage() {
-      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('http://127.0.0.1:8000/SendNewMessage', this.form).then(function (response) {// console.log(response.data)
-      });
+      if (this.auth_user) {
+        this.form.user = this.auth_user.name;
+        axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('http://127.0.0.1:8000/message', this.form).then(function (response) {// console.log(response.data)
+        });
+      } else {
+        axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('http://127.0.0.1:8000/message', this.form).then(function (response) {// console.log(response.data)
+        });
+      }
     }
-  }
+  },
+  props: ['_auth_user', '_messages']
 });
 
 /***/ }),
@@ -47397,11 +47407,13 @@ var render = function() {
           _vm._v(" "),
           _c("h6", { staticClass: "d-flex justify-content-center" }, [
             _vm._v("From: "),
-            _c("i", [_vm._v(_vm._s(message.username))])
+            _c("i", [
+              _vm._v(_vm._s(message.user_id ? message.user.name : "Guest"))
+            ])
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "d-flex justify-content-center" }, [
-            _vm._v("Message: " + _vm._s(message.message))
+            _vm._v("Message: " + _vm._s(message.body))
           ])
         ])
       }),
@@ -47447,36 +47459,6 @@ var render = function() {
                   return
                 }
                 _vm.$set(_vm.form, "message", $event.target.value)
-              }
-            }
-          }),
-          _vm._v("\n\t\t\t \n\t\t\t"),
-          _c("label", { attrs: { for: "user" } }, [_vm._v("Username:")]),
-          _vm._v("\n\t\t\t \n\t\t\t"),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.form.user,
-                expression: "form.user"
-              }
-            ],
-            staticClass: "form-control",
-            attrs: {
-              required: "",
-              id: "user",
-              placeholder: "username..",
-              type: "text",
-              name: "username"
-            },
-            domProps: { value: _vm.form.user },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.$set(_vm.form, "user", $event.target.value)
               }
             }
           }),

@@ -10,23 +10,24 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
+use App\PublicInstantMessage;
 
 class NewPublicMessage implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $message;
-    public $username;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($message, $username)
+    public function __construct(PublicInstantMessage $message)
     {
-        $this->message = $message;
-        $this->username = $username;
+        // $this->body = $body;
+        // $this->username = $username;
+        $this->message = $message->load('user');
     }
 
     /**

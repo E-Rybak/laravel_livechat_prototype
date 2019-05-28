@@ -4,8 +4,8 @@
 		<div style="overflow-y: auto; height: 300px;">
 			<div class="message" v-for="message in messages">
 				<hr style="width: 200px">
-				<h6 class="d-flex justify-content-center">From:&nbsp;<i>{{ message.username }}</i></h6>
-				<div class="d-flex justify-content-center">Message: {{ message.message}}</div>
+				<h6 class="d-flex justify-content-center">From:&nbsp;<i>{{ message.user_id ? message.user.name : "Guest" }}</i></h6>
+				<div class="d-flex justify-content-center">Message: {{ message.body}}</div>
 			</div>
 		</div>
 		<form class="form-inline" @submit.prevent="sendMessage">
@@ -13,10 +13,6 @@
 				<label for="message">Message:</label>
 				&nbsp;
 				<input required id="message" class="form-control" placeholder="message.." type="text" name="message" v-model="form.message">
-				&nbsp;
-				<label for="user">Username:</label>
-				&nbsp;
-				<input required id="user" class="form-control" placeholder="username.." type="text" name="username" v-model="form.user">
 				&nbsp;
 			</div>
 			<button type="submit" class="btn btn-primary mb2">Send message</button>
@@ -27,32 +23,47 @@
 import Axios from 'axios'
 	export default {
 		mounted() {
-			this.listen();
+			this.listen()
+			this.auth_user = JSON.parse(this._auth_user)
+			this.messages = JSON.parse(this._messages)
+			if (this.auth_user) {
+				this.form.user_id = this.auth_user.id
+			}
 		},
 		data () {
 			return {
 				messages: [],
 				form: {
-					user: '',
-					message: ''
+					message: '',
+					user_id: null,
 				},
+				auth_user: {},
 			}
 		},
 		methods: {
 			listen ()
 			{
 				Echo.channel('public-channel')
-					.listen('NewPublicMessage', (message) => {
-						console.log(message);
-						this.messages.push(message);
+					.listen('NewPublicMessage', (response) => {
+						console.log(response);
+						this.messages.push(response.message);
 					});
 			},
 			sendMessage ()
 			{
-				Axios.post('http://127.0.0.1:8000/SendNewMessage', this.form).then(response => {
+				if (this.auth_user) {
+					this.form.user = this.auth_user.name
+					Axios.post('http://127.0.0.1:8000/message', this.form).then(response => {
 					// console.log(response.data)
 				})
+				} else {
+					Axios.post('http://127.0.0.1:8000/message', this.form).then(response => {
+					// console.log(response.data)
+				})
+				}
+				
 			}
-		}
+		},
+		props: ['_auth_user', '_messages'],
 	};
 </script>

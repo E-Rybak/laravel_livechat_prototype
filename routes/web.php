@@ -17,7 +17,8 @@ Route::get('/', function () {
 })->name('base');
 
 Route::get('/public-channel', function () {
-	return view('public-channel');
+	$messages = App\PublicInstantMessage::with('user')->get();
+	return view('public-channel', compact('messages'));
 })->name('public-channel');
 
 Route::get('/presence-channel', function () {
@@ -45,8 +46,18 @@ Route::get('/chatrooms/{id}', function ($id) {
 
 })->middleware('auth')->name('private-channel');
 
-Route::post('/SendNewMessage', function () {
-	broadcast(new App\Events\NewPublicMessage( request('message'), request('user')));
+Route::post('/message', function () {
+	$message = new App\PublicInstantMessage();
+	$message->body = request('message');
+
+	if (request('user')) {
+		$user = auth()->user();
+		$user->public_messages()->save($message);
+		broadcast(new App\Events\NewPublicMessage($message));
+	} else {
+		$message->save();
+		broadcast(new App\Events\NewPublicMessage($message));
+	}
 });
 
 Route::post('message/private', function () {

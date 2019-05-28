@@ -47,6 +47,10 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Chat');
     }
 
+    public function public_messages () {
+        return $this->hasMany('App\PublicInstantMessage');
+    }
+
     public function addInstantMessage (InstantMessage $message, Chat $chat) {
         $chat->instant_messages()->save($message);
         $this->instant_messages()->save($message);
