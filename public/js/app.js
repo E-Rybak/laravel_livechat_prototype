@@ -1879,6 +1879,27 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var easytimer_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! easytimer.js */ "./node_modules/easytimer.js/dist/easytimer.js");
+/* harmony import */ var easytimer_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(easytimer_js__WEBPACK_IMPORTED_MODULE_1__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -1902,6 +1923,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1909,7 +1931,11 @@ __webpack_require__.r(__webpack_exports__);
       form: {
         message: ''
       },
-      auth_user: {}
+      auth_user: {},
+      notifications: [],
+      typing: false,
+      name: '',
+      usersOnline: []
     };
   },
   methods: {
@@ -1922,12 +1948,16 @@ __webpack_require__.r(__webpack_exports__);
     listen: function listen() {
       var _this = this;
 
-      Echo.join('Presence').here(function (users) {// users currently in the room
-        // console.log(users)
+      Echo.join('Presence').here(function (users) {
+        _this.usersOnline = users;
       }).joining(function (user) {
-        console.log('User ' + user.name + ' joining the room');
+        var notification = user.name + ' joined the room';
+
+        _this.notifications.push(notification);
       }).leaving(function (user) {
-        console.log('user ' + user.name + ' left the room');
+        var notification = user.name + ' left the room';
+
+        _this.notifications.push(notification);
       }).listen('NewPresenceMessage', function (response) {
         console.log(response.message);
 
@@ -1935,10 +1965,15 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     userTyping: function userTyping() {
-      console.log('123');
-      Echo["private"]('Presence').whisper('typing', {
-        name: this.auth_user.name
-      });
+      var _this2 = this;
+
+      var channel = Echo["private"]('Presence');
+      setTimeout(function () {
+        channel.whisper('typing', {
+          name: _this2.auth_user.name,
+          typing: true
+        });
+      }, 300);
     }
   },
   mounted: function mounted() {
@@ -1947,8 +1982,15 @@ __webpack_require__.r(__webpack_exports__);
     this.listen();
   },
   created: function created() {
-    Echo["private"]('Presence').listenForWhisper('typing', function (name) {
-      console.log(name.name + ' is typing.');
+    var _this3 = this;
+
+    console.log("Listening for whisper");
+    Echo["private"]('Presence').listenForWhisper('typing', function (e) {
+      e.typing ? _this3.typing = true : _this3.typing = false;
+      _this3.name = e.name;
+      setTimeout(function () {
+        _this3.typing = false;
+      }, 1000);
     });
   },
   props: ['_messages', '_auth_user']
@@ -6483,6 +6525,1087 @@ __webpack_require__.r(__webpack_exports__);
 
 }));
 //# sourceMappingURL=bootstrap.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/easytimer.js/dist/easytimer.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/easytimer.js/dist/easytimer.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * easytimer.js
+ * Generated: 2019-03-18
+ * Version: 3.1.0
+ */
+
+(function (global, factory) {
+   true ? factory(exports) :
+  undefined;
+}(this, function (exports) { 'use strict';
+
+  function _typeof(obj) {
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof = function (obj) {
+        return typeof obj;
+      };
+    } else {
+      _typeof = function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      };
+    }
+
+    return _typeof(obj);
+  }
+
+  function leftPadding(string, padLength, character) {
+    var i;
+    var characters = '';
+
+    if (string.length > padLength) {
+      return string;
+    }
+
+    for (i = 0; i < padLength; i = i + 1) {
+      characters += String(character);
+    }
+
+    return (characters + string).slice(-characters.length);
+  }
+
+  function TimeCounter() {
+    this.secondTenths = 0;
+    this.seconds = 0;
+    this.minutes = 0;
+    this.hours = 0;
+    this.days = 0;
+    /**
+     * [toString convert the counted values on a string]
+     * @param  {array} units           [array with the units to display]
+     * @param  {string} separator       [separator of the units]
+     * @param  {number} leftZeroPadding [number of zero padding]
+     * @return {string}                 [result string]
+     */
+
+    this.toString = function () {
+      var units = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : ['hours', 'minutes', 'seconds'];
+      var separator = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ':';
+      var leftZeroPadding = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 2;
+      units = units || ['hours', 'minutes', 'seconds'];
+      separator = separator || ':';
+      leftZeroPadding = leftZeroPadding || 2;
+      var stringTime;
+      var arrayTime = [];
+      var i;
+
+      for (i = 0; i < units.length; i = i + 1) {
+        if (this[units[i]] !== undefined) {
+          if (units[i] === 'secondTenths') {
+            arrayTime.push(this[units[i]]);
+          } else {
+            arrayTime.push(leftPadding(this[units[i]], leftZeroPadding, '0'));
+          }
+        }
+      }
+
+      stringTime = arrayTime.join(separator);
+      return stringTime;
+    };
+  }
+
+  /*
+  * Polyfill por IE9, IE10 and IE11
+  */
+  var CustomEvent$1 = typeof window !== 'undefined' ? window.CustomEvent : undefined;
+
+  if (typeof window !== 'undefined' && typeof CustomEvent$1 !== 'function') {
+    CustomEvent$1 = function CustomEvent(event, params) {
+      params = params || {
+        bubbles: false,
+        cancelable: false,
+        detail: undefined
+      };
+      var evt = document.createEvent('CustomEvent');
+      evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+      return evt;
+    };
+
+    CustomEvent$1.prototype = window.Event.prototype;
+    window.CustomEvent = CustomEvent$1;
+  }
+
+  /*
+   * General functions, variables and constants
+   */
+
+  var SECOND_TENTHS_PER_SECOND = 10;
+  var SECONDS_PER_MINUTE = 60;
+  var MINUTES_PER_HOUR = 60;
+  var HOURS_PER_DAY = 24;
+  var SECOND_TENTHS_POSITION = 0;
+  var SECONDS_POSITION = 1;
+  var MINUTES_POSITION = 2;
+  var HOURS_POSITION = 3;
+  var DAYS_POSITION = 4;
+  var SECOND_TENTHS = 'secondTenths';
+  var SECONDS = 'seconds';
+  var MINUTES = 'minutes';
+  var HOURS = 'hours';
+  var DAYS = 'days';
+  var VALID_INPUT_VALUES = [SECOND_TENTHS, SECONDS, MINUTES, HOURS, DAYS];
+  var unitsInMilliseconds = {
+    secondTenths: 100,
+    seconds: 1000,
+    minutes: 60000,
+    hours: 3600000,
+    days: 86400000
+  };
+  var groupedUnits = {
+    secondTenths: SECOND_TENTHS_PER_SECOND,
+    seconds: SECONDS_PER_MINUTE,
+    minutes: MINUTES_PER_HOUR,
+    hours: HOURS_PER_DAY
+  };
+  var events =  true && module.exports && "function" === 'function' ? __webpack_require__(/*! events */ "./node_modules/events/events.js") : undefined;
+
+  function hasDOM() {
+    return typeof document !== 'undefined';
+  }
+
+  function hasEventEmitter() {
+    return events;
+  }
+
+  function mod(number, module) {
+    return (number % module + module) % module;
+  }
+  /**
+   * [Timer Timer/Chronometer/Countdown compatible with AMD and NodeJS.
+   * Can update time values with different time intervals: tenth of seconds,
+   * seconds, minutes and hours.]
+   */
+
+
+  function Timer() {
+    /*
+    * PRIVATE variables and Functions
+    */
+    var counters = new TimeCounter();
+    var totalCounters = new TimeCounter();
+    var intervalId;
+    var eventEmitter = hasDOM() ? document.createElement('span') : hasEventEmitter() ? new events.EventEmitter() : undefined;
+    var running = false;
+    var paused = false;
+    var precision;
+    var timerTypeFactor;
+    var customCallback;
+    var timerConfig = {};
+    var currentParams;
+    var targetValues;
+    var startValues;
+    var countdown;
+    var startingDate;
+    var targetDate;
+    var eventData = {
+      detail: {
+        timer: this
+      }
+    };
+
+    function updateCounters(precision, roundedValue) {
+      totalCounters[precision] = roundedValue;
+
+      if (precision === DAYS) {
+        counters[precision] = roundedValue;
+      } else if (roundedValue >= 0) {
+        counters[precision] = mod(roundedValue, groupedUnits[precision]);
+      } else {
+        counters[precision] = groupedUnits[precision] - mod(roundedValue, groupedUnits[precision]);
+      }
+    }
+
+    function updateDays(value) {
+      return updateUnitByPrecision(value, DAYS);
+    }
+
+    function updateHours(value) {
+      return updateUnitByPrecision(value, HOURS);
+    }
+
+    function updateMinutes(value) {
+      return updateUnitByPrecision(value, MINUTES);
+    }
+
+    function updateSeconds(value) {
+      return updateUnitByPrecision(value, SECONDS);
+    }
+
+    function updateSecondTenths(value) {
+      return updateUnitByPrecision(value, SECOND_TENTHS);
+    }
+
+    function updateUnitByPrecision(value, precision) {
+      var previousValue = totalCounters[precision];
+      updateCounters(precision, calculateIntegerUnitQuotient(value, unitsInMilliseconds[precision]));
+      return totalCounters[precision] !== previousValue;
+    }
+
+    function stopTimerAndResetCounters() {
+      stopTimer();
+      resetCounters();
+    }
+
+    function stopTimer() {
+      clearInterval(intervalId);
+      intervalId = undefined;
+      running = false;
+      paused = false;
+    }
+
+    function setParamsAndStartTimer(params) {
+      if (!isPaused()) {
+        setParams(params);
+      } else {
+        startingDate = calculateStartingDate();
+        targetValues = setTarget(currentParams.target);
+      }
+
+      startTimer();
+    }
+
+    function startTimer() {
+      var interval = unitsInMilliseconds[precision];
+
+      if (isTargetAchieved(roundTimestamp(Date.now()))) {
+        return;
+      }
+
+      intervalId = setInterval(updateTimerAndDispatchEvents, interval);
+      running = true;
+      paused = false;
+    }
+
+    function calculateStartingDate() {
+      return roundTimestamp(Date.now()) - totalCounters.secondTenths * unitsInMilliseconds[SECOND_TENTHS] * timerTypeFactor;
+    }
+
+    function updateTimerAndDispatchEvents() {
+      var currentTime = roundTimestamp(Date.now());
+      var valuesUpdated = updateTimer();
+      dispatchEvents(valuesUpdated);
+      customCallback(eventData.detail.timer);
+
+      if (isTargetAchieved(currentTime)) {
+        stop();
+        dispatchEvent('targetAchieved', eventData);
+      }
+    }
+
+    function updateTimer() {
+      var currentTime = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : roundTimestamp(Date.now());
+      var elapsedTime = timerTypeFactor > 0 ? currentTime - startingDate : startingDate - currentTime;
+      var valuesUpdated = {};
+      valuesUpdated[SECOND_TENTHS] = updateSecondTenths(elapsedTime);
+      valuesUpdated[SECONDS] = updateSeconds(elapsedTime);
+      valuesUpdated[MINUTES] = updateMinutes(elapsedTime);
+      valuesUpdated[HOURS] = updateHours(elapsedTime);
+      valuesUpdated[DAYS] = updateDays(elapsedTime);
+      return valuesUpdated;
+    }
+
+    function roundTimestamp(timestamp) {
+      return Math.floor(timestamp / unitsInMilliseconds[precision]) * unitsInMilliseconds[precision];
+    }
+
+    function dispatchEvents(valuesUpdated) {
+      if (valuesUpdated[SECOND_TENTHS]) {
+        dispatchEvent('secondTenthsUpdated', eventData);
+      }
+
+      if (valuesUpdated[SECONDS]) {
+        dispatchEvent('secondsUpdated', eventData);
+      }
+
+      if (valuesUpdated[MINUTES]) {
+        dispatchEvent('minutesUpdated', eventData);
+      }
+
+      if (valuesUpdated[HOURS]) {
+        dispatchEvent('hoursUpdated', eventData);
+      }
+
+      if (valuesUpdated[DAYS]) {
+        dispatchEvent('daysUpdated', eventData);
+      }
+    }
+
+    function isTargetAchieved(currentDate) {
+      return targetValues instanceof Array && currentDate >= targetDate;
+    }
+
+    function resetCounters() {
+      for (var counter in counters) {
+        if (counters.hasOwnProperty(counter) && typeof counters[counter] === 'number') {
+          counters[counter] = 0;
+        }
+      }
+
+      for (var _counter in totalCounters) {
+        if (totalCounters.hasOwnProperty(_counter) && typeof totalCounters[_counter] === 'number') {
+          totalCounters[_counter] = 0;
+        }
+      }
+    }
+
+    function setParams(params) {
+      params = params || {};
+      precision = checkPrecision(params.precision);
+      customCallback = typeof params.callback === 'function' ? params.callback : function () {};
+      countdown = params.countdown === true;
+      timerTypeFactor = countdown === true ? -1 : 1;
+
+      if (_typeof(params.startValues) === 'object') {
+        setStartValues(params.startValues);
+      } else {
+        startValues = null;
+      }
+
+      startingDate = calculateStartingDate();
+      updateTimer();
+
+      if (_typeof(params.target) === 'object') {
+        targetValues = setTarget(params.target);
+      } else if (countdown) {
+        params.target = {
+          seconds: 0
+        };
+        targetValues = setTarget(params.target);
+      } else {
+        targetValues = null;
+      }
+
+      timerConfig = {
+        precision: precision,
+        callback: customCallback,
+        countdown: _typeof(params) === 'object' && params.countdown === true,
+        target: targetValues,
+        startValues: startValues
+      };
+      currentParams = params;
+    }
+
+    function checkPrecision(precision) {
+      precision = typeof precision === 'string' ? precision : SECONDS;
+
+      if (!isValidInputValue(precision)) {
+        throw new Error("Error in precision parameter: ".concat(precision, " is not a valid value"));
+      }
+
+      return precision;
+    }
+
+    function isValidInputValue(value) {
+      return VALID_INPUT_VALUES.indexOf(value) >= 0;
+    }
+
+    function configInputValues(inputValues) {
+      var secondTenths, seconds, minutes, hours, days, values;
+
+      if (_typeof(inputValues) === 'object') {
+        if (inputValues instanceof Array) {
+          if (inputValues.length !== 5) {
+            throw new Error('Array size not valid');
+          }
+
+          values = inputValues;
+        } else {
+          for (var value in inputValues) {
+            if (VALID_INPUT_VALUES.indexOf(value) < 0) {
+              throw new Error("Error in startValues or target parameter: ".concat(value, " is not a valid input value"));
+            }
+          }
+
+          values = [inputValues.secondTenths || 0, inputValues.seconds || 0, inputValues.minutes || 0, inputValues.hours || 0, inputValues.days || 0];
+        }
+      }
+
+      secondTenths = values[SECOND_TENTHS_POSITION];
+      seconds = values[SECONDS_POSITION] + calculateIntegerUnitQuotient(secondTenths, SECOND_TENTHS_PER_SECOND);
+      minutes = values[MINUTES_POSITION] + calculateIntegerUnitQuotient(seconds, SECONDS_PER_MINUTE);
+      hours = values[HOURS_POSITION] + calculateIntegerUnitQuotient(minutes, MINUTES_PER_HOUR);
+      days = values[DAYS_POSITION] + calculateIntegerUnitQuotient(hours, HOURS_PER_DAY);
+      values[SECOND_TENTHS_POSITION] = secondTenths % SECOND_TENTHS_PER_SECOND;
+      values[SECONDS_POSITION] = seconds % SECONDS_PER_MINUTE;
+      values[MINUTES_POSITION] = minutes % MINUTES_PER_HOUR;
+      values[HOURS_POSITION] = hours % HOURS_PER_DAY;
+      values[DAYS_POSITION] = days;
+      return values;
+    }
+
+    function calculateIntegerUnitQuotient(unit, divisor) {
+      var quotient = unit / divisor;
+      return quotient < 0 ? Math.ceil(quotient) : Math.floor(quotient);
+    }
+
+    function setTarget(inputTarget) {
+      if (!inputTarget) {
+        return;
+      }
+
+      targetValues = configInputValues(inputTarget);
+      var targetCounter = calculateTotalCounterFromValues(targetValues);
+      targetDate = startingDate + targetCounter.secondTenths * unitsInMilliseconds[SECOND_TENTHS] * timerTypeFactor;
+      return targetValues;
+    }
+
+    function setStartValues(inputStartValues) {
+      startValues = configInputValues(inputStartValues);
+      counters.secondTenths = startValues[SECOND_TENTHS_POSITION];
+      counters.seconds = startValues[SECONDS_POSITION];
+      counters.minutes = startValues[MINUTES_POSITION];
+      counters.hours = startValues[HOURS_POSITION];
+      counters.days = startValues[DAYS_POSITION];
+      totalCounters = calculateTotalCounterFromValues(startValues, totalCounters);
+    }
+
+    function calculateTotalCounterFromValues(values, outputCounter) {
+      var total = outputCounter || {};
+      total.days = values[DAYS_POSITION];
+      total.hours = total.days * HOURS_PER_DAY + values[HOURS_POSITION];
+      total.minutes = total.hours * MINUTES_PER_HOUR + values[MINUTES_POSITION];
+      total.seconds = total.minutes * SECONDS_PER_MINUTE + values[SECONDS_POSITION];
+      total.secondTenths = total.seconds * SECOND_TENTHS_PER_SECOND + values[[SECOND_TENTHS_POSITION]];
+      return total;
+    }
+    /*
+     * PUBLIC functions
+     */
+
+    /**
+     * [stop stops the timer and resets the counters. Dispatch stopped event]
+     */
+
+
+    function stop() {
+      stopTimerAndResetCounters();
+      dispatchEvent('stopped', eventData);
+    }
+    /**
+     * [stop stops and starts the timer. Dispatch stopped event]
+     */
+
+
+    function reset() {
+      stopTimerAndResetCounters();
+      setParamsAndStartTimer(currentParams);
+      dispatchEvent('reset', eventData);
+    }
+    /**
+     * [start starts the timer configured by the params object. Dispatch started event]
+     * @param  {object} params [Configuration parameters]
+     */
+
+
+    function start() {
+      var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      if (isRunning()) {
+        return;
+      }
+
+      setParamsAndStartTimer(params);
+      dispatchEvent('started', eventData);
+    }
+    /**
+     * [pause stops the timer without resetting the counters. The timer it can be restarted with start function.
+     * Dispatch paused event]
+     * @return {type} [description]
+     */
+
+
+    function pause() {
+      stopTimer();
+      paused = true;
+      dispatchEvent('paused', eventData);
+    }
+    /**
+     * [addEventListener Adds event listener to the timer]
+     * @param {string} event      [event to listen]
+     * @param {function} listener   [the event listener function]
+     */
+
+
+    function addEventListener(event, listener) {
+      if (hasDOM()) {
+        eventEmitter.addEventListener(event, listener);
+      } else if (hasEventEmitter()) {
+        eventEmitter.on(event, listener);
+      }
+    }
+    /**
+     * [removeEventListener Removes event listener to the timer]
+     * @param  {string} event    [event to remove listener]
+     * @param  {function} listener [listener to remove]
+     */
+
+
+    function removeEventListener(event, listener) {
+      if (hasDOM()) {
+        eventEmitter.removeEventListener(event, listener);
+      } else if (hasEventEmitter()) {
+        eventEmitter.removeListener(event, listener);
+      }
+    }
+    /**
+     * [dispatchEvent dispatches an event]
+     * @param  {string} event [event to dispatch]
+     */
+
+
+    function dispatchEvent(event, data) {
+      if (hasDOM()) {
+        eventEmitter.dispatchEvent(new CustomEvent(event, data));
+      } else if (hasEventEmitter()) {
+        eventEmitter.emit(event, data);
+      }
+    }
+    /**
+     * [isRunning return true if the timer is running]
+     * @return {Boolean}
+     */
+
+
+    function isRunning() {
+      return running;
+    }
+    /**
+     * [isPaused returns true if the timer is paused]
+     * @return {Boolean}
+     */
+
+
+    function isPaused() {
+      return paused;
+    }
+    /**
+     * [getTimeValues returns the counter with the current timer values]
+     * @return {TimeCounter}
+     */
+
+
+    function getTimeValues() {
+      return counters;
+    }
+    /**
+     * [getTotalTimeValues returns the counter with the current timer total values]
+     * @return {TimeCounter}
+     */
+
+
+    function getTotalTimeValues() {
+      return totalCounters;
+    }
+    /**
+     * [getConfig returns the configuration parameters]
+     * @return {type}
+     */
+
+
+    function getConfig() {
+      return timerConfig;
+    }
+    /**
+     * Public API
+     * Definition of Timer instance public functions
+     */
+
+
+    if (typeof this !== 'undefined') {
+      this.start = start;
+      this.pause = pause;
+      this.stop = stop;
+      this.reset = reset;
+      this.isRunning = isRunning;
+      this.isPaused = isPaused;
+      this.getTimeValues = getTimeValues;
+      this.getTotalTimeValues = getTotalTimeValues;
+      this.getConfig = getConfig;
+      this.addEventListener = addEventListener;
+      this.on = addEventListener;
+      this.removeEventListener = removeEventListener;
+      this.off = removeEventListener;
+    }
+  }
+
+  exports.default = Timer;
+  exports.Timer = Timer;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+}));
+
+
+/***/ }),
+
+/***/ "./node_modules/events/events.js":
+/*!***************************************!*\
+  !*** ./node_modules/events/events.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+var R = typeof Reflect === 'object' ? Reflect : null
+var ReflectApply = R && typeof R.apply === 'function'
+  ? R.apply
+  : function ReflectApply(target, receiver, args) {
+    return Function.prototype.apply.call(target, receiver, args);
+  }
+
+var ReflectOwnKeys
+if (R && typeof R.ownKeys === 'function') {
+  ReflectOwnKeys = R.ownKeys
+} else if (Object.getOwnPropertySymbols) {
+  ReflectOwnKeys = function ReflectOwnKeys(target) {
+    return Object.getOwnPropertyNames(target)
+      .concat(Object.getOwnPropertySymbols(target));
+  };
+} else {
+  ReflectOwnKeys = function ReflectOwnKeys(target) {
+    return Object.getOwnPropertyNames(target);
+  };
+}
+
+function ProcessEmitWarning(warning) {
+  if (console && console.warn) console.warn(warning);
+}
+
+var NumberIsNaN = Number.isNaN || function NumberIsNaN(value) {
+  return value !== value;
+}
+
+function EventEmitter() {
+  EventEmitter.init.call(this);
+}
+module.exports = EventEmitter;
+
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._eventsCount = 0;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+var defaultMaxListeners = 10;
+
+Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
+  enumerable: true,
+  get: function() {
+    return defaultMaxListeners;
+  },
+  set: function(arg) {
+    if (typeof arg !== 'number' || arg < 0 || NumberIsNaN(arg)) {
+      throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + arg + '.');
+    }
+    defaultMaxListeners = arg;
+  }
+});
+
+EventEmitter.init = function() {
+
+  if (this._events === undefined ||
+      this._events === Object.getPrototypeOf(this)._events) {
+    this._events = Object.create(null);
+    this._eventsCount = 0;
+  }
+
+  this._maxListeners = this._maxListeners || undefined;
+};
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
+  if (typeof n !== 'number' || n < 0 || NumberIsNaN(n)) {
+    throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n + '.');
+  }
+  this._maxListeners = n;
+  return this;
+};
+
+function $getMaxListeners(that) {
+  if (that._maxListeners === undefined)
+    return EventEmitter.defaultMaxListeners;
+  return that._maxListeners;
+}
+
+EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
+  return $getMaxListeners(this);
+};
+
+EventEmitter.prototype.emit = function emit(type) {
+  var args = [];
+  for (var i = 1; i < arguments.length; i++) args.push(arguments[i]);
+  var doError = (type === 'error');
+
+  var events = this._events;
+  if (events !== undefined)
+    doError = (doError && events.error === undefined);
+  else if (!doError)
+    return false;
+
+  // If there is no 'error' event listener then throw.
+  if (doError) {
+    var er;
+    if (args.length > 0)
+      er = args[0];
+    if (er instanceof Error) {
+      // Note: The comments on the `throw` lines are intentional, they show
+      // up in Node's output if this results in an unhandled exception.
+      throw er; // Unhandled 'error' event
+    }
+    // At least give some kind of context to the user
+    var err = new Error('Unhandled error.' + (er ? ' (' + er.message + ')' : ''));
+    err.context = er;
+    throw err; // Unhandled 'error' event
+  }
+
+  var handler = events[type];
+
+  if (handler === undefined)
+    return false;
+
+  if (typeof handler === 'function') {
+    ReflectApply(handler, this, args);
+  } else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      ReflectApply(listeners[i], this, args);
+  }
+
+  return true;
+};
+
+function _addListener(target, type, listener, prepend) {
+  var m;
+  var events;
+  var existing;
+
+  if (typeof listener !== 'function') {
+    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+  }
+
+  events = target._events;
+  if (events === undefined) {
+    events = target._events = Object.create(null);
+    target._eventsCount = 0;
+  } else {
+    // To avoid recursion in the case that type === "newListener"! Before
+    // adding it to the listeners, first emit "newListener".
+    if (events.newListener !== undefined) {
+      target.emit('newListener', type,
+                  listener.listener ? listener.listener : listener);
+
+      // Re-assign `events` because a newListener handler could have caused the
+      // this._events to be assigned to a new object
+      events = target._events;
+    }
+    existing = events[type];
+  }
+
+  if (existing === undefined) {
+    // Optimize the case of one listener. Don't need the extra array object.
+    existing = events[type] = listener;
+    ++target._eventsCount;
+  } else {
+    if (typeof existing === 'function') {
+      // Adding the second element, need to change to array.
+      existing = events[type] =
+        prepend ? [listener, existing] : [existing, listener];
+      // If we've already got an array, just append.
+    } else if (prepend) {
+      existing.unshift(listener);
+    } else {
+      existing.push(listener);
+    }
+
+    // Check for listener leak
+    m = $getMaxListeners(target);
+    if (m > 0 && existing.length > m && !existing.warned) {
+      existing.warned = true;
+      // No error code for this since it is a Warning
+      // eslint-disable-next-line no-restricted-syntax
+      var w = new Error('Possible EventEmitter memory leak detected. ' +
+                          existing.length + ' ' + String(type) + ' listeners ' +
+                          'added. Use emitter.setMaxListeners() to ' +
+                          'increase limit');
+      w.name = 'MaxListenersExceededWarning';
+      w.emitter = target;
+      w.type = type;
+      w.count = existing.length;
+      ProcessEmitWarning(w);
+    }
+  }
+
+  return target;
+}
+
+EventEmitter.prototype.addListener = function addListener(type, listener) {
+  return _addListener(this, type, listener, false);
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.prependListener =
+    function prependListener(type, listener) {
+      return _addListener(this, type, listener, true);
+    };
+
+function onceWrapper() {
+  var args = [];
+  for (var i = 0; i < arguments.length; i++) args.push(arguments[i]);
+  if (!this.fired) {
+    this.target.removeListener(this.type, this.wrapFn);
+    this.fired = true;
+    ReflectApply(this.listener, this.target, args);
+  }
+}
+
+function _onceWrap(target, type, listener) {
+  var state = { fired: false, wrapFn: undefined, target: target, type: type, listener: listener };
+  var wrapped = onceWrapper.bind(state);
+  wrapped.listener = listener;
+  state.wrapFn = wrapped;
+  return wrapped;
+}
+
+EventEmitter.prototype.once = function once(type, listener) {
+  if (typeof listener !== 'function') {
+    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+  }
+  this.on(type, _onceWrap(this, type, listener));
+  return this;
+};
+
+EventEmitter.prototype.prependOnceListener =
+    function prependOnceListener(type, listener) {
+      if (typeof listener !== 'function') {
+        throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+      }
+      this.prependListener(type, _onceWrap(this, type, listener));
+      return this;
+    };
+
+// Emits a 'removeListener' event if and only if the listener was removed.
+EventEmitter.prototype.removeListener =
+    function removeListener(type, listener) {
+      var list, events, position, i, originalListener;
+
+      if (typeof listener !== 'function') {
+        throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+      }
+
+      events = this._events;
+      if (events === undefined)
+        return this;
+
+      list = events[type];
+      if (list === undefined)
+        return this;
+
+      if (list === listener || list.listener === listener) {
+        if (--this._eventsCount === 0)
+          this._events = Object.create(null);
+        else {
+          delete events[type];
+          if (events.removeListener)
+            this.emit('removeListener', type, list.listener || listener);
+        }
+      } else if (typeof list !== 'function') {
+        position = -1;
+
+        for (i = list.length - 1; i >= 0; i--) {
+          if (list[i] === listener || list[i].listener === listener) {
+            originalListener = list[i].listener;
+            position = i;
+            break;
+          }
+        }
+
+        if (position < 0)
+          return this;
+
+        if (position === 0)
+          list.shift();
+        else {
+          spliceOne(list, position);
+        }
+
+        if (list.length === 1)
+          events[type] = list[0];
+
+        if (events.removeListener !== undefined)
+          this.emit('removeListener', type, originalListener || listener);
+      }
+
+      return this;
+    };
+
+EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+
+EventEmitter.prototype.removeAllListeners =
+    function removeAllListeners(type) {
+      var listeners, events, i;
+
+      events = this._events;
+      if (events === undefined)
+        return this;
+
+      // not listening for removeListener, no need to emit
+      if (events.removeListener === undefined) {
+        if (arguments.length === 0) {
+          this._events = Object.create(null);
+          this._eventsCount = 0;
+        } else if (events[type] !== undefined) {
+          if (--this._eventsCount === 0)
+            this._events = Object.create(null);
+          else
+            delete events[type];
+        }
+        return this;
+      }
+
+      // emit removeListener for all listeners on all events
+      if (arguments.length === 0) {
+        var keys = Object.keys(events);
+        var key;
+        for (i = 0; i < keys.length; ++i) {
+          key = keys[i];
+          if (key === 'removeListener') continue;
+          this.removeAllListeners(key);
+        }
+        this.removeAllListeners('removeListener');
+        this._events = Object.create(null);
+        this._eventsCount = 0;
+        return this;
+      }
+
+      listeners = events[type];
+
+      if (typeof listeners === 'function') {
+        this.removeListener(type, listeners);
+      } else if (listeners !== undefined) {
+        // LIFO order
+        for (i = listeners.length - 1; i >= 0; i--) {
+          this.removeListener(type, listeners[i]);
+        }
+      }
+
+      return this;
+    };
+
+function _listeners(target, type, unwrap) {
+  var events = target._events;
+
+  if (events === undefined)
+    return [];
+
+  var evlistener = events[type];
+  if (evlistener === undefined)
+    return [];
+
+  if (typeof evlistener === 'function')
+    return unwrap ? [evlistener.listener || evlistener] : [evlistener];
+
+  return unwrap ?
+    unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
+}
+
+EventEmitter.prototype.listeners = function listeners(type) {
+  return _listeners(this, type, true);
+};
+
+EventEmitter.prototype.rawListeners = function rawListeners(type) {
+  return _listeners(this, type, false);
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  if (typeof emitter.listenerCount === 'function') {
+    return emitter.listenerCount(type);
+  } else {
+    return listenerCount.call(emitter, type);
+  }
+};
+
+EventEmitter.prototype.listenerCount = listenerCount;
+function listenerCount(type) {
+  var events = this._events;
+
+  if (events !== undefined) {
+    var evlistener = events[type];
+
+    if (typeof evlistener === 'function') {
+      return 1;
+    } else if (evlistener !== undefined) {
+      return evlistener.length;
+    }
+  }
+
+  return 0;
+}
+
+EventEmitter.prototype.eventNames = function eventNames() {
+  return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
+};
+
+function arrayClone(arr, n) {
+  var copy = new Array(n);
+  for (var i = 0; i < n; ++i)
+    copy[i] = arr[i];
+  return copy;
+}
+
+function spliceOne(list, index) {
+  for (; index + 1 < list.length; index++)
+    list[index] = list[index + 1];
+  list.pop();
+}
+
+function unwrapListeners(arr) {
+  var ret = new Array(arr.length);
+  for (var i = 0; i < ret.length; ++i) {
+    ret[i] = arr[i].listener || arr[i];
+  }
+  return ret;
+}
 
 
 /***/ }),
@@ -47640,82 +48763,149 @@ var render = function() {
       _vm._v("Presence chat - requires authentication")
     ]),
     _vm._v(" "),
-    _c(
-      "div",
-      { staticStyle: { "overflow-y": "auto", height: "300px" } },
-      _vm._l(_vm.messages, function(message) {
-        return _c("div", { staticClass: "message" }, [
-          _c("hr", { staticStyle: { width: "200px" } }),
-          _vm._v(" "),
-          _c("h6", { staticClass: "d-flex justify-content-center" }, [
-            _vm._v("From: "),
-            _c("i", [_vm._v(_vm._s(message.user.name))])
+    _c("div", { staticClass: "row" }, [
+      _c(
+        "form",
+        {
+          staticClass: "form-inline message col-sm-6",
+          on: {
+            submit: function($event) {
+              $event.preventDefault()
+              return _vm.sendMessage($event)
+            }
+          }
+        },
+        [
+          _c("div", { staticClass: "form-group" }, [
+            _c("label", { attrs: { for: "message" } }, [_vm._v("Message:")]),
+            _vm._v("\n\t\t\t\t \n\t\t\t\t"),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.form.message,
+                  expression: "form.message"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                required: "",
+                id: "message",
+                placeholder: "message..",
+                type: "text",
+                name: "message"
+              },
+              domProps: { value: _vm.form.message },
+              on: {
+                keyup: _vm.userTyping,
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.form, "message", $event.target.value)
+                }
+              }
+            }),
+            _vm._v("\n\t\t\t\t \n\t\t\t")
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "d-flex justify-content-center" }, [
-            _vm._v("Message: " + _vm._s(message.body))
+          _c(
+            "button",
+            { staticClass: "btn btn-primary mb2", attrs: { type: "submit" } },
+            [_vm._v("Send message")]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticStyle: { "overflow-y": "auto", height: "300px" } },
+        _vm._l(_vm.messages, function(message) {
+          return _c("div", { staticClass: "message col-sm-6" }, [
+            _c("hr", { staticStyle: { width: "200px" } }),
+            _vm._v(" "),
+            _c("h6", { staticClass: "d-flex justify-content-center" }, [
+              _vm._v("From: "),
+              _c("i", [
+                _vm._v(
+                  _vm._s(
+                    message.user.id === _vm.auth_user.id
+                      ? "You"
+                      : message.user.name
+                  )
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "d-flex justify-content-center" }, [
+              _vm._v("Message: " + _vm._s(message.body))
+            ])
           ])
-        ])
-      }),
-      0
-    ),
-    _vm._v(" "),
-    _c(
-      "form",
-      {
-        staticClass: "form-inline",
-        on: {
-          submit: function($event) {
-            $event.preventDefault()
-            return _vm.sendMessage($event)
-          }
-        }
-      },
-      [
-        _c("div", { staticClass: "form-group" }, [
-          _c("label", { attrs: { for: "message" } }, [_vm._v("Message:")]),
-          _vm._v("\n\t\t\t \n\t\t\t"),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.form.message,
-                expression: "form.message"
-              }
-            ],
-            staticClass: "form-control",
-            attrs: {
-              required: "",
-              id: "message",
-              placeholder: "message..",
-              type: "text",
-              name: "message"
-            },
-            domProps: { value: _vm.form.message },
-            on: {
-              keydown: _vm.userTyping,
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.$set(_vm.form, "message", $event.target.value)
-              }
-            }
+        }),
+        0
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "container col-sm-4" },
+        [
+          _c("h5", [_vm._v("Users online")]),
+          _vm._v(" "),
+          _vm._l(_vm.usersOnline, function(userOnline) {
+            return _c("div", [
+              _vm._v(
+                "\n\t\t\t\t" +
+                  _vm._s(userOnline.name) +
+                  " - " +
+                  _vm._s(userOnline.email) +
+                  "\n\t\t\t"
+              )
+            ])
           }),
-          _vm._v("\n\t\t\t \n\t\t")
-        ]),
-        _vm._v(" "),
-        _c(
-          "button",
-          { staticClass: "btn btn-primary mb2", attrs: { type: "submit" } },
-          [_vm._v("Send message")]
-        )
-      ]
-    )
+          _vm._v(" "),
+          _c("h5", [_vm._v("Notification logs")]),
+          _vm._v(" "),
+          _vm._l(_vm.notifications, function(notification) {
+            return _c("div", { staticClass: "log" }, [
+              _vm._v("\n\t\t\t\t" + _vm._s(notification) + "\n\t\t\t")
+            ])
+          })
+        ],
+        2
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.typing,
+              expression: "typing"
+            }
+          ],
+          staticClass: "typingNotification col-sm-12",
+          attrs: { align: "center" }
+        },
+        [_c("i", [_vm._v(_vm._s(_vm.name) + " is typing")])]
+      )
+    ]),
+    _vm._v(" "),
+    _vm._m(0)
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { attrs: { id: "countdownExample" } }, [
+      _c("div", { staticClass: "values" })
+    ])
+  }
+]
 render._withStripped = true
 
 

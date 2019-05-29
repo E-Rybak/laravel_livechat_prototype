@@ -24,6 +24,7 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
+        "easytimer.js": "^3.1.0",
         "laravel-echo": "^1.5.3",
         "pusher-js": "^4.4.0"
     }
