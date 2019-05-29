@@ -24,7 +24,7 @@ Route::get('/public-channel', function () {
 Route::get('/presence-channel', function () {
 	$messages = App\PresenceMessage::with('user')->get();
 	return view('presence-channel', compact('messages'));
-})->name('presence-channel');
+})->name('presence-channel')->middleware('auth');
 
 Route::get('/chatrooms', function () {
 	$rooms = App\Chat::get();

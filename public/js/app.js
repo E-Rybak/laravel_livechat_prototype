@@ -1948,7 +1948,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     Echo["private"]('Presence').listenForWhisper('typing', function (name) {
-      console.log("asq");
+      console.log(name.name + ' is typing.');
     });
   },
   props: ['_messages', '_auth_user']
