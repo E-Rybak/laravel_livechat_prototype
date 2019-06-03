@@ -80,6 +80,12 @@ Route::post('message/presence', function () {
 
 	$user->presence_messages()->save($message);
 	broadcast(new App\Events\NewPresenceMessage($message->load('user')));
+
+	$user = auth()->user();
+	$message = request('message');
+
+	broadcast(new App\Events\NewPublicMessage($message, $user));
+	broadcast(new App\Events\NewPublicMessage($message, $user))->toOthers()';
 });
 
 Auth::routes();
