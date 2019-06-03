@@ -12,7 +12,11 @@
 */
 
 Broadcast::channel('App.User.{id}', function ($user, $id) {
-    return true;
+    if ($user->id === $id) {
+    	return true;
+    } else {
+    	return false;
+    }
 });
 
 Broadcast::channel('Presence', function ($user) {
@@ -21,4 +25,8 @@ Broadcast::channel('Presence', function ($user) {
 		'name' => $user->name,
 		'email' => $user->email
 	];
+});
+
+Broadcast::channel('public-channel', function ($user) {
+
 });
